@@ -3,18 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 /**
  *
  * @author Pongo
  */
 public class PenghitungUmurFrame extends javax.swing.JFrame {
-
-    /**
-     * Creates new form PenghitungUmurFrame
-     */
+private final PenghitungUmurHelper helper;
+ 
     public PenghitungUmurFrame() {
         initComponents();
+        helper = new PenghitungUmurHelper();
     }
 
     /**
@@ -33,11 +35,11 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        dateChooserTanggalLahir = new com.toedter.calendar.JDateChooser();
+        txtUmur = new javax.swing.JTextField();
+        txtHariUlangTahunBerikutnya = new javax.swing.JTextField();
+        btnHitung = new javax.swing.JButton();
+        btnKeluar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
 
         jLabel4.setText("jLabel4");
@@ -77,17 +79,23 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(21, 12, 24, 0);
         jPanel1.add(jLabel3, gridBagConstraints);
+
+        dateChooserTanggalLahir.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                dateChooserTanggalLahirPropertyChange(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.ipadx = 225;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(28, 18, 0, 0);
-        jPanel1.add(jDateChooser1, gridBagConstraints);
+        jPanel1.add(dateChooserTanggalLahir, gridBagConstraints);
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtUmur.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtUmurActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -97,7 +105,7 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         gridBagConstraints.ipadx = 492;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(18, 18, 0, 12);
-        jPanel1.add(jTextField1, gridBagConstraints);
+        jPanel1.add(txtUmur, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -105,18 +113,28 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         gridBagConstraints.ipadx = 492;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(18, 18, 0, 12);
-        jPanel1.add(jTextField2, gridBagConstraints);
+        jPanel1.add(txtHariUlangTahunBerikutnya, gridBagConstraints);
 
-        jButton1.setText("Hitung Umur");
+        btnHitung.setText("Hitung Umur");
+        btnHitung.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHitungActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(28, 18, 0, 0);
-        jPanel1.add(jButton1, gridBagConstraints);
+        jPanel1.add(btnHitung, gridBagConstraints);
 
-        jButton2.setText("Keluar");
+        btnKeluar.setText("Keluar");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
@@ -124,7 +142,7 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         gridBagConstraints.ipadx = 30;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(28, 26, 0, 12);
-        jPanel1.add(jButton2, gridBagConstraints);
+        jPanel1.add(btnKeluar, gridBagConstraints);
 
         jLabel5.setFont(new java.awt.Font("Bookman Old Style", 1, 24)); // NOI18N
         jLabel5.setText("Aplikasi Penghitung Umur");
@@ -156,9 +174,40 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtUmurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUmurActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtUmurActionPerformed
+
+    private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_btnKeluarActionPerformed
+
+    private void dateChooserTanggalLahirPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dateChooserTanggalLahirPropertyChange
+        txtUmur.setText("");
+        txtHariUlangTahunBerikutnya.setText("");
+    }//GEN-LAST:event_dateChooserTanggalLahirPropertyChange
+
+    private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
+        Date tanggalLahir = dateChooserTanggalLahir.getDate();
+ if (tanggalLahir != null) {
+ // Menghitung umur dan hari ulang tahun berikutnya
+ LocalDate lahir =
+tanggalLahir.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+ LocalDate sekarang = LocalDate.now();
+ String umur = helper.hitungUmurDetail(lahir, sekarang);
+ txtUmur.setText(umur);
+ 
+ // Menghitung tanggal ulang tahun berikutnya
+ LocalDate ulangTahunBerikutnya =
+helper.hariUlangTahunBerikutnya(lahir, sekarang);
+ String hariUlangTahunBerikutnya =
+helper.getDayOfWeekInIndonesian(ulangTahunBerikutnya);
+ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+ String tanggalUlangTahunBerikutnya =
+ulangTahunBerikutnya.format(formatter);
+ txtHariUlangTahunBerikutnya.setText(hariUlangTahunBerikutnya + " (" + tanggalUlangTahunBerikutnya + ")");
+ } 
+    }//GEN-LAST:event_btnHitungActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,25 +237,23 @@ public class PenghitungUmurFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new PenghitungUmurFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new PenghitungUmurFrame().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnHitung;
+    private javax.swing.JButton btnKeluar;
+    private com.toedter.calendar.JDateChooser dateChooserTanggalLahir;
     private javax.swing.JButton jButton3;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField txtHariUlangTahunBerikutnya;
+    private javax.swing.JTextField txtUmur;
     // End of variables declaration//GEN-END:variables
 }
