@@ -7,16 +7,20 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Pongo
  */
 public class PenghitungUmurFrame extends javax.swing.JFrame {
-private final PenghitungUmurHelper helper;
- 
+private PenghitungUmurHelper helper = new PenghitungUmurHelper();
+private volatile boolean stopFetching = false;
+private Thread peristiwaThread;
+
+
+
     public PenghitungUmurFrame() {
         initComponents();
-        helper = new PenghitungUmurHelper();
     }
 
     /**
@@ -41,6 +45,8 @@ private final PenghitungUmurHelper helper;
         btnHitung = new javax.swing.JButton();
         btnKeluar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtAreaPeristiwa = new javax.swing.JTextArea();
 
         jLabel4.setText("jLabel4");
 
@@ -147,6 +153,10 @@ private final PenghitungUmurHelper helper;
         jLabel5.setFont(new java.awt.Font("Bookman Old Style", 1, 24)); // NOI18N
         jLabel5.setText("Aplikasi Penghitung Umur");
 
+        txtAreaPeristiwa.setColumns(20);
+        txtAreaPeristiwa.setRows(5);
+        jScrollPane1.setViewportView(txtAreaPeristiwa);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -158,8 +168,10 @@ private final PenghitungUmurHelper helper;
                         .addComponent(jLabel5))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(22, 22, 22)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(76, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 899, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,7 +180,9 @@ private final PenghitungUmurHelper helper;
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -183,32 +197,69 @@ private final PenghitungUmurHelper helper;
     }//GEN-LAST:event_btnKeluarActionPerformed
 
     private void dateChooserTanggalLahirPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dateChooserTanggalLahirPropertyChange
+
         txtUmur.setText("");
         txtHariUlangTahunBerikutnya.setText("");
+         // Hentikan thread yang sedang berjalan saat tanggal lahir berubah
+        stopFetching = true;
+        if (peristiwaThread != null && peristiwaThread.isAlive()) {
+        peristiwaThread.interrupt();
+    }
+        txtAreaPeristiwa.setText("");
     }//GEN-LAST:event_dateChooserTanggalLahirPropertyChange
 
     private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
         Date tanggalLahir = dateChooserTanggalLahir.getDate();
- if (tanggalLahir != null) {
- // Menghitung umur dan hari ulang tahun berikutnya
- LocalDate lahir =
-tanggalLahir.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
- LocalDate sekarang = LocalDate.now();
- String umur = helper.hitungUmurDetail(lahir, sekarang);
- txtUmur.setText(umur);
+  if (tanggalLahir != null) {
+            LocalDate lahir = tanggalLahir.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate sekarang = LocalDate.now();
  
- // Menghitung tanggal ulang tahun berikutnya
- LocalDate ulangTahunBerikutnya =
-helper.hariUlangTahunBerikutnya(lahir, sekarang);
- String hariUlangTahunBerikutnya =
-helper.getDayOfWeekInIndonesian(ulangTahunBerikutnya);
+  // Hitung umur
+            String umur = helper.hitungUmurDetail(lahir, sekarang);
+            txtUmur.setText(umur);
+ 
+  // Hitung ulang tahun berikutnya
+            LocalDate ulangTahunBerikutnya = helper.hariUlangTahunBerikutnya(lahir, sekarang);
+            String hariUlangTahunBerikutnya = helper.getDayOfWeekInIndonesian(ulangTahunBerikutnya);
+            
  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
- String tanggalUlangTahunBerikutnya =
-ulangTahunBerikutnya.format(formatter);
+ String tanggalUlangTahunBerikutnya = ulangTahunBerikutnya.format(formatter);
  txtHariUlangTahunBerikutnya.setText(hariUlangTahunBerikutnya + " (" + tanggalUlangTahunBerikutnya + ")");
- } 
+        } else {
+            JOptionPane.showMessageDialog(this, "Silakan pilih tanggal lahir terlebih dahulu.", "Error", JOptionPane.ERROR_MESSAGE);
+    } 
+  // Set stop flag untuk thread sebelumnya
+stopFetching = true;
+if (peristiwaThread != null && peristiwaThread.isAlive()) {
+peristiwaThread.interrupt(); // Beri sinyal ke thread untuk berhenti
+}
+// Reset flag untuk thread baru
+stopFetching = false;
+// Mendapatkan peristiwa penting secara asinkron
+peristiwaThread = new Thread(() -> {
+try {
+txtAreaPeristiwa.setText("Tunggu, sedang mengambil data...\n");
+helper.getPeristiwaBarisPerBaris(txtUmur,txtAreaPeristiwa, () -> stopFetching);
+if (!stopFetching) {
+javax.swing.SwingUtilities.invokeLater(() ->
+txtAreaPeristiwa.append("Selesai mengambil data peristiwa"));
+}
+} catch (Exception e) {
+if (Thread.currentThread().isInterrupted()) {
+javax.swing.SwingUtilities.invokeLater(() ->
+txtAreaPeristiwa.setText("Pengambilan data dibatalkan.\n"));
+}
+
+}
+});
+peristiwaThread.start();
+                                                        
+   
+    
+  //GEN-LAST:event_btnHitungActionPerformed
     }//GEN-LAST:event_btnHitungActionPerformed
 
+   
     /**
      * @param args the command line arguments
      */
@@ -253,6 +304,8 @@ ulangTahunBerikutnya.format(formatter);
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea txtAreaPeristiwa;
     private javax.swing.JTextField txtHariUlangTahunBerikutnya;
     private javax.swing.JTextField txtUmur;
     // End of variables declaration//GEN-END:variables
