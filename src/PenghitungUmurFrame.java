@@ -54,6 +54,7 @@ private Thread peristiwaThread;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(255, 51, 153));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
@@ -99,6 +100,7 @@ private Thread peristiwaThread;
         gridBagConstraints.insets = new java.awt.Insets(28, 18, 0, 0);
         jPanel1.add(dateChooserTanggalLahir, gridBagConstraints);
 
+        txtUmur.setEditable(false);
         txtUmur.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtUmurActionPerformed(evt);
@@ -112,6 +114,8 @@ private Thread peristiwaThread;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(18, 18, 0, 12);
         jPanel1.add(txtUmur, gridBagConstraints);
+
+        txtHariUlangTahunBerikutnya.setEditable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -153,6 +157,7 @@ private Thread peristiwaThread;
         jLabel5.setFont(new java.awt.Font("Bookman Old Style", 1, 24)); // NOI18N
         jLabel5.setText("Aplikasi Penghitung Umur");
 
+        txtAreaPeristiwa.setBackground(new java.awt.Color(0, 255, 255));
         txtAreaPeristiwa.setColumns(20);
         txtAreaPeristiwa.setRows(5);
         jScrollPane1.setViewportView(txtAreaPeristiwa);
@@ -256,7 +261,7 @@ peristiwaThread.start();
                                                         
    
     
-  //GEN-LAST:event_btnHitungActionPerformed
+                                           
     }//GEN-LAST:event_btnHitungActionPerformed
 
    

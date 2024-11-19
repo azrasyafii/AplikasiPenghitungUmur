@@ -69,6 +69,11 @@
   </Layout>
   <SubComponents>
     <Container class="javax.swing.JPanel" name="jPanel1">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="99" green="33" red="ff" type="rgb"/>
+        </Property>
+      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
       <SubComponents>
@@ -122,6 +127,9 @@
           </Constraints>
         </Component>
         <Component class="javax.swing.JTextField" name="txtUmur">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtUmurActionPerformed"/>
           </Events>
@@ -132,6 +140,9 @@
           </Constraints>
         </Component>
         <Component class="javax.swing.JTextField" name="txtHariUlangTahunBerikutnya">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
               <GridBagConstraints gridX="3" gridY="3" gridWidth="3" gridHeight="1" fill="0" ipadX="492" ipadY="0" insetsTop="18" insetsLeft="18" insetsBottom="0" insetsRight="12" anchor="18" weightX="0.0" weightY="0.0"/>
@@ -183,6 +194,9 @@
       <SubComponents>
         <Component class="javax.swing.JTextArea" name="txtAreaPeristiwa">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="0" type="rgb"/>
+            </Property>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
           </Properties>
