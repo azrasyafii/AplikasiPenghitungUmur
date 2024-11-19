@@ -108,7 +108,8 @@ String urlString = "https://byabbe.se/on-this-day/" +
                 JSONObject event = events.getJSONObject(i);
                 String year = event.getString("year");
                 String description = event.getString("description");
-                String peristiwa = year + ": " + description;
+                String translatedDescription = translateToIndonesian(description);
+                String peristiwa = year + ": " + translatedDescription;
 
                 javax.swing.SwingUtilities.invokeLater(() ->
                         txtAreaPeristiwa.append(peristiwa + "\n"));
